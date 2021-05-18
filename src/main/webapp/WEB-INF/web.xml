@@ -5,8 +5,8 @@
 	id="WebApp_ID" version="4.0">
 	<display-name>restaurant-jwduth</display-name>
 
-	<display-name>Java Web Under the Hood</display-name>
-	<description>Restaurant Menu</description>
+	<display-name>Restaurant Menu</display-name>
+	<description>Java Web Development Under the Hood</description>
 
 	<servlet>
 		<servlet-name>MenuServlet</servlet-name>
@@ -15,6 +15,15 @@
 	<servlet-mapping>
 		<servlet-name>MenuServlet</servlet-name>
 		<url-pattern>/menu</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SearchServlet</servlet-name>
+		<servlet-class>me.fevvelasquez.jwuth.restaurant.servlets.SearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SearchServlet</servlet-name>
+		<url-pattern>/search</url-pattern>
 	</servlet-mapping>
 
 </web-app>

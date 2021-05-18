@@ -17,12 +17,16 @@ package me.fevvelasquez.jwuth.restaurant.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import me.fevvelasquez.jwuth.restaurant.domain.MenuItem;
 
 /**
  * Represents the Menu list of available food items.
  */
 public class MenuDataService {
+	
 	private List<MenuItem> menuItems;
 	{
 		menuItems = new ArrayList<MenuItem>();
@@ -52,6 +56,16 @@ public class MenuDataService {
 
 	public List<MenuItem> getFullMenu() {
 		return menuItems;
+	}
+	
+	public List<MenuItem> getMenuListContaining(String searchFor) {
+		String charSequenceLowerCase = searchFor.toLowerCase();
+		Predicate<MenuItem> nameContains = menuItem -> menuItem.getName().toLowerCase()
+				.contains(charSequenceLowerCase);
+		Predicate<MenuItem> descriptionContains = menuItem -> menuItem.getDescription().toLowerCase()
+				.contains(charSequenceLowerCase);
+		return menuItems.stream().filter(nameContains.or(descriptionContains)).collect(Collectors.toList());
+
 	}
 
 }
