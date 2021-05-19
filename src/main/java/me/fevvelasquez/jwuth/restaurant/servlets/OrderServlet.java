@@ -17,9 +17,10 @@ package me.fevvelasquez.jwuth.restaurant.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,12 +31,23 @@ import me.fevvelasquez.jwuth.restaurant.data.MenuDataService;
 import me.fevvelasquez.jwuth.restaurant.domain.MenuItem;
 
 @SuppressWarnings("serial")
-public class MenuServlet extends HttpServlet {
-
+public class OrderServlet extends HttpServlet {
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
+		// Process order
+		Function<MenuItem, BigDecimal> itemPriceMultipliedByQuantity = 
+				menuItem -> menuItem.getPrice().multiply(
+						new BigDecimal(request.getParameter("qOf_" + menuItem.getId()))
+					);
+		// ---------------------------------------------------------------
+		MenuDataService mds = new MenuDataService();
+		BigDecimal total = mds.getFullMenu().stream()
+				.map(itemPriceMultipliedByQuantity)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		// ---------------------------------------------------------------
+
 		// Build html text
 		StringBuilder html = new StringBuilder();
 		// ---------------------------------------------------------------
@@ -46,28 +58,15 @@ public class MenuServlet extends HttpServlet {
 				+ "    <title>Restaurant</title>\n"
 				+ "  </head>\n"
 				+ "  <body>\n"
-				+ "	   <h1>Restaurant</h1>\n");	
+				+ "	   <h1>Restaurant</h1>\n");		
 		// ---------------------------------------------------------------
-		MenuDataService mds = new MenuDataService();
-		List<MenuItem> menu = mds.getFullMenu();
-
-		html.append("<h2>Full Menu:</h2>\n");
-		html.append("<form action=\"order\" method=\"post\">\n");
-		html.append("<ul>\n");
-		menu.stream().forEach(menuItem -> 
-			html.append(
-				  "<li>\n" + menuItem.getName().toUpperCase()
-				+ " <input type=\"number\" min=\"0\" max=\"10\" value=\"0\" name=\"qOf_"+ menuItem.getId() +"\"> &#127869;" 
-				+	"<br>" + menuItem.getDescription()
-				+	"<br>" + NumberFormat.getCurrencyInstance(Locale.UK).format(menuItem.getPrice()) + "\n"
-				+ "</li>\n")
-			);
-		html.append("</ul>\n");
-		html.append("<input type=\"submit\" value=\"Place order\">\n");
-		html.append("</form>\n");
+		html.append("<h2>Order Received.</h2>\n");
+		html.append("<p>Your order has been received. <br> The total is "
+				+ NumberFormat.getCurrencyInstance(Locale.UK).format(total) 
+				+ "</p>\n");
 		// ---------------------------------------------------------------
 		html.append("</body>\n"
-			+"</html>");
+				+"</html>");
 		// ---------------------------------------------------------------
 
 		// Write and send response
@@ -77,5 +76,4 @@ public class MenuServlet extends HttpServlet {
 		out.close();
 		// ---------------------------------------------------------------
 	}
-
 }
