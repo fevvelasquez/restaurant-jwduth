@@ -57,7 +57,7 @@ public class MenuServlet extends HttpServlet {
 		menu.stream().forEach(menuItem -> 
 			html.append(
 				  "<li>\n" + menuItem.getName().toUpperCase()
-				+ " <input type=\"number\" min=\"0\" max=\"10\" value=\"0\" name=\"qOf_"+ menuItem.getId() +"\"> &#127869;" 
+				+ " <input type=\"number\" min=\"0\" max=\"10\" value=\"0\" name=\"qOf_"+ menuItem.getId() +"\"> &#127860;" 
 				+	"<br>" + menuItem.getDescription()
 				+	"<br>" + NumberFormat.getCurrencyInstance(Locale.UK).format(menuItem.getPrice()) + "\n"
 				+ "</li>\n")

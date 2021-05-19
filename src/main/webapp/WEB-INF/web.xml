@@ -33,5 +33,10 @@
 		<servlet-name>OrderServlet</servlet-name>
 		<url-pattern>/order</url-pattern>
 	</servlet-mapping>
+	
+	<session-config>
+	<!-- session expires in minutes -->
+	<session-timeout>7</session-timeout>
+	</session-config>
 
 </web-app>

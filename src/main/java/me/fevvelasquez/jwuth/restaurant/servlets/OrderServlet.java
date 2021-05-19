@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -26,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import me.fevvelasquez.jwuth.restaurant.data.MenuDataService;
 import me.fevvelasquez.jwuth.restaurant.domain.MenuItem;
@@ -37,6 +39,7 @@ public class OrderServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		// Process order
+		System.out.println("New order has been received. " + LocalDateTime.now());
 		Function<MenuItem, BigDecimal> itemPriceMultipliedByQuantity = 
 				menuItem -> menuItem.getPrice().multiply(
 						new BigDecimal(request.getParameter("qOf_" + menuItem.getId()))
@@ -48,15 +51,28 @@ public class OrderServlet extends HttpServlet {
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		// ---------------------------------------------------------------
 		
+		// Session
+		HttpSession session = request.getSession();
+		session.setAttribute("total", total);
+		// ---------------------------------------------------------------
+
 		// Post-Redirect-Get
-		response.sendRedirect("order?total=" +total);
+		// if no cookies allowed, see response.encodeRedirectURL()
+		response.sendRedirect("order");
 		// ---------------------------------------------------------------
 
 	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// get parameters
-		String total = request.getParameter("total");
+		
+		// Session
+		HttpSession session = request.getSession();
+		BigDecimal total = (BigDecimal) session.getAttribute("total");
+		if(total==null) {
+			response.sendRedirect("menu");
+			return;
+		}
 		// ---------------------------------------------------------------
 		
 		// Build html text
@@ -73,7 +89,7 @@ public class OrderServlet extends HttpServlet {
 		// ---------------------------------------------------------------
 		html.append("<h2>Order Received.</h2>\n");
 		html.append("<p>Your order has been received. <br> The total is "
-				+ NumberFormat.getCurrencyInstance(Locale.UK).format(new BigDecimal(total)) 
+				+ NumberFormat.getCurrencyInstance(Locale.UK).format(total) 
 				+ "</p>\n");
 		// ---------------------------------------------------------------
 		html.append("</body>\n"
@@ -88,5 +104,6 @@ public class OrderServlet extends HttpServlet {
 		out.print(html);
 		out.close();
 		// ---------------------------------------------------------------
+		
 	}
 }
