@@ -45,33 +45,22 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>restaurant resources</web-resource-name>
-			<url-pattern>/order</url-pattern>
-			<url-pattern>/search</url-pattern>
+			<url-pattern>/menu</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>restaurant</role-name>
 		</auth-constraint>
-	</security-constraint>
 
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>search resources</web-resource-name>
-			<url-pattern>/search</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>search</role-name>
-		</auth-constraint>
 	</security-constraint>
-
 	<security-role>
 		<role-name>restaurant</role-name>
 	</security-role>
-	<security-role>
-		<role-name>search</role-name>
-	</security-role>
 
 	<login-config>
-		<auth-method>BASIC</auth-method>
-		<realm-name>This is a Security Test</realm-name>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login.html</form-login-page>
+			<form-error-page>/failed-login.html</form-error-page>
+		</form-login-config>
 	</login-config>
 </web-app>
