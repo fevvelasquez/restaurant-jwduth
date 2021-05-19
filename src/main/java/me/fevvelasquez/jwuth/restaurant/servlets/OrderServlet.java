@@ -47,7 +47,18 @@ public class OrderServlet extends HttpServlet {
 				.map(itemPriceMultipliedByQuantity)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		// ---------------------------------------------------------------
+		
+		// Post-Redirect-Get
+		response.sendRedirect("order?total=" +total);
+		// ---------------------------------------------------------------
 
+	}
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// get parameters
+		String total = request.getParameter("total");
+		// ---------------------------------------------------------------
+		
 		// Build html text
 		StringBuilder html = new StringBuilder();
 		// ---------------------------------------------------------------
@@ -62,13 +73,15 @@ public class OrderServlet extends HttpServlet {
 		// ---------------------------------------------------------------
 		html.append("<h2>Order Received.</h2>\n");
 		html.append("<p>Your order has been received. <br> The total is "
-				+ NumberFormat.getCurrencyInstance(Locale.UK).format(total) 
+				+ NumberFormat.getCurrencyInstance(Locale.UK).format(new BigDecimal(total)) 
 				+ "</p>\n");
 		// ---------------------------------------------------------------
 		html.append("</body>\n"
 				+"</html>");
 		// ---------------------------------------------------------------
 
+		
+		
 		// Write and send response
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
